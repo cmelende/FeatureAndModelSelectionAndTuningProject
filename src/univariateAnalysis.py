@@ -75,6 +75,36 @@ class OutlierFilter:
     def __init__(self, df, filterColumns):
         self.dataframe = df
         self.columnNames = filterColumns
+        
+    # def get_lower_whisker_value(self , columnName):
+    #     analysis = UniVariateAnalysis(self.dataframe, columnName)
+    #     return analysis.get_q1() - ((3/2) * analysis.get_iqr())
+
+    # def get_higher_whisker_value(self, columnName):
+    #     analysis = UniVariateAnalysis(self.dataframe, columnName)
+    #     return analysis.get_q3() + ( (3/2) * analysis.get_iqr())
+
+    
+    def get_df_without_lower_outliers(self):
+        copy = self.dataframe.copy()
+        for col in self.columnNames:
+            analysis = UniVariateAnalysis(self.dataframe, col)
+            copy = copy[copy[col] >= analysis.get_lower_whisker_value()]
+        return copy
+
+    def get_df_without_higher_outliers(self):
+        copy_df = self.dataframe.copy()
+        for col in self.columnNames:
+            analysis = UniVariateAnalysis(self.dataframe, col)
+            copy_df = copy_df[copy_df[col] <= analysis.get_higher_whisker_value()]
+        return copy_df
+
+    def get_df_without_outliers(self):
+        copy_df = self.dataframe.copy()
+        for col in self.columnNames:
+            analysis = UniVariateAnalysis(self.dataframe, col)
+            copy_df = copy_df[(copy_df[col] <= analysis.get_higher_whisker_value()) & (copy_df[col] >= analysis.get_lower_whisker_value())]
+        return copy_df
 
         
 class UniVariateReport: 
